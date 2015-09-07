@@ -11,9 +11,16 @@ namespace SampleApp.Controllers
 		[Route("")]
 		public ActionResult Index()
 		{
-			ViewData["appUrl"] = ToAbsoluteUrlWithoutQuery(Request.Url);
+			ViewData["appConfig"] = GetClientConfig(Request);
 			return View();
 		}
+
+        private static dynamic GetClientConfig(HttpRequestBase request)
+        {
+            return new {
+                absoluteUrl = ToAbsoluteUrlWithoutQuery(request.Url)
+            };
+        } 
 
 		private static string ToAbsoluteUrlWithoutQuery(Uri uri)
 		{

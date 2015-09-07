@@ -1,10 +1,10 @@
 ﻿import app = require("durandal/app");
 import viewLocator = require("durandal/viewLocator");
 import system = require("durandal/system");
-declare var appUrl: any;
+
 export function start(): void {
 	if (window.location.href.indexOf("https://outlook") > -1) {
-		window.location.href = appUrl;
+        window.location.href = appConfig.absoluteUrl;
 		return;
 	}
 

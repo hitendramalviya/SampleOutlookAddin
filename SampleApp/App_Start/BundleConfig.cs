@@ -36,7 +36,8 @@ namespace SampleApp
 					.Include("~/Scripts/bootstrap.js")
 					.Include("~/Scripts/knockout-{version}.js")
 					.Include("~/Scripts/q.js")
-					.Include("~/Scripts/MicrosoftAjax.js")
+                    .Include("~/Scripts/lodash.js")
+                    .Include("~/Scripts/MicrosoftAjax.js")
 				);
 
 			bundles.Add(
