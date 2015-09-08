@@ -16,9 +16,9 @@ class shell {
 	activate() {
 		router.map([
 			{ route: '', title: 'Welcome', moduleId: 'viewmodels/welcome', nav: true },
-			{ route: 'flickr', moduleId: 'viewmodels/flickr', nav: true }
-		]).buildNavigationModel();
-
+			{ route: 'flickr', moduleId: 'viewmodels/flickr', nav: true },
+			{ route: 'attachment', moduleId: 'viewmodels/Attachment', nav: true }
+		]).buildNavigationModel()
 		return router.activate();
 	}
 }

@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SampleApp.Models;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
+using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace SampleApp.Controllers
 {
@@ -15,15 +18,15 @@ namespace SampleApp.Controllers
 	{
 		[Route("OfficeApi/ProcessMailAttachment")]
 		[HttpPost]
-		public async Task<IHttpActionResult> ProcessMailAttachment(AttachmentProcessRequest request)
+		public async Task<HttpResponseMessage> ProcessMailAttachment(AttachmentProcessRequest request)
 		{
-			var response = await ProcessAttachmentRequest(request.Attachments.First().Id, request.EwsUrl, request.Token);
-			return Ok(response);
+			var response = await ProcessAttachmentRequest(request.Attachment.Id, request.EwsUrl, request.Token);
+			return response;
 		}
 
 		private async Task<HttpResponseMessage> ProcessAttachmentRequest(string attachmentId, string ewsUrl, string token)
 		{
-			var soapString = string.Format(AttachmentSoapRequest, attachmentId);
+			//var soapString = string.Format(AttachmentSoapRequest, attachmentId);
 			var client = new HttpClient
 			{
 				DefaultRequestHeaders =
@@ -36,12 +39,21 @@ namespace SampleApp.Controllers
 			try
 			{
 				var uri = new Uri(ewsUrl);
-				var contentRequest = new StringContent(soapString, Encoding.UTF8, "text/xml");
-				var response = await client.PostAsync(uri, contentRequest);
-				stream = await response.Content.ReadAsStreamAsync();
-				var attachmentStream = new AttachmentStream(stream);
+				//var contentRequest = new StringContent(soapString, Encoding.UTF8, "text/xml");
+				var response = await client.GetStreamAsync(uri);
+
+				var sReader = new StreamReader(response);
+				var jsonTextReader = new JsonTextReader(sReader);
+				var serializer = new JsonSerializer();
+				var attData = serializer.Deserialize<AttachmentData>(jsonTextReader);
+
+				//new Bina
+				//stream = await response.Content.ReadAsStreamAsync();
+				//var attachmentStream = new AttachmentStream(stream);
 				var res = Request.CreateResponse();
-				res.Content = new PushStreamContent(attachmentStream.WriteToStream());
+				//res.Content = new PushStreamContent(attachmentStream.WriteToStream());
+				res.Content = new StreamContent(response);
+				res.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 				return res;
 			}
 			catch (Exception)
@@ -53,26 +65,13 @@ namespace SampleApp.Controllers
 				stream.Close();
 			}
 		}
+	}
 
-		private const string AttachmentSoapRequest =
-			@"<?xml version=""1.0"" encoding=""utf-8""?>
-		<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
-		 xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
-		 xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/""
-		 xmlns:t=""http://schemas.microsoft.com/exchange/services/2006/types"">
-		<soap:Header>
-		<t:RequestServerVersion Version=""Exchange2013"" />
-		</soap:Header>
-			<soap:Body>
-				<GetAttachment xmlns=""http://schemas.microsoft.com/exchange/services/2006/messages""
-				 xmlns:t=""http://schemas.microsoft.com/exchange/services/2006/types"">
-					<AttachmentShape/>
-						<AttachmentIds>
-						<t:AttachmentId Id=""{0}""/>
-					</AttachmentIds>
-				</GetAttachment>
-			</soap:Body>
-		</soap:Envelope>";
+	public class AttachmentData
+	{
+		public string ContentBytes { get; set; }
+		public string Id { get; set; }
+		public string Name { get; set; }
 	}
 
 	public class AttachmentStream

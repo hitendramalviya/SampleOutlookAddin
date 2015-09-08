@@ -15,12 +15,13 @@ namespace SampleApp.Controllers
 			return View();
 		}
 
-        private static dynamic GetClientConfig(HttpRequestBase request)
-        {
-            return new {
-                absoluteUrl = ToAbsoluteUrlWithoutQuery(request.Url)
-            };
-        } 
+		private static dynamic GetClientConfig(HttpRequestBase request)
+		{
+			return new
+			{
+				absoluteUrl = ToAbsoluteUrlWithoutQuery(request.Url)
+			};
+		}
 
 		private static string ToAbsoluteUrlWithoutQuery(Uri uri)
 		{

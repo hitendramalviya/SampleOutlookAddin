@@ -11,8 +11,8 @@ namespace SampleApp.Models
 		[JsonProperty(PropertyName = "ewsUrl")]
 		public string EwsUrl { get; set; }
 
-		[JsonProperty(PropertyName = "attachments")]
-		public ICollection<AttachmentDetails> Attachments { get; set; }
+		[JsonProperty(PropertyName = "attachment")]
+		public AttachmentDetails Attachment { get; set; }
 
 		[JsonProperty(PropertyName = "documentServiceUrl")]
 		public string DocumentServiceUrl { get; set; }

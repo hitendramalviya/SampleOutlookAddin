@@ -10,8 +10,6 @@ requirejs.config({
 	}
 });
 
-require(["bootstrapper"], bootstrapper => {
-	Office.initialize = () => {
-		bootstrapper.start();
-	};
+require(["bootstrapper"], (bootstrapper) => {
+	bootstrapper.start();
 });
