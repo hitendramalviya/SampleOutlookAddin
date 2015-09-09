@@ -9,7 +9,7 @@
 			"endpoints": {
 				'https://outlook.office.com/api/v1.0/me': 'https://outlook.office.com'
 			},
-			"displayCall": function (url) {
+            "displayCall": function (url) {
 				var ref = window.open(url, '_blank', 'location=no,hidden=no');
 				ref.addEventListener('loadstart', function (event) {
 					var redirectUri = "https://localhost:44300/";

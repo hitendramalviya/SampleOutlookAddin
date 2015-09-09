@@ -19,7 +19,7 @@ class shell {
 			{ route: 'flickr', moduleId: 'viewmodels/flickr', nav: true },
 			{ route: 'attachment', moduleId: 'viewmodels/Attachment', nav: true }
 		]).buildNavigationModel()
-		return router.activate();
+		router.activate();
 	}
 }
 

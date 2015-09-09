@@ -1,5 +1,6 @@
 import http = require("plugins/http");
-import adalAuthenticationService = require("services/adalAuthenticationService");
+import AdalAuthenticationService = require("services/AdalAuthenticationService");
+import Config = require("Config/Config");
 
 class OfficeAPI {
 	isReceivedItem: boolean;
@@ -11,7 +12,9 @@ class OfficeAPI {
 	attachments: Office.AttachmentDetails[] = [];
 
 	private messageRead: Office.Types.MessageRead;
-	private ewsServiceToken: string;
+    private ewsServiceToken: string;
+    private config: Config;
+    private authService: AdalAuthenticationService;
 	constructor() {
 		this.userProfile = Office.context.mailbox.userProfile;
 		this.messageRead = Office.cast.item.toMessageRead(Office.context.mailbox.item);
@@ -22,8 +25,17 @@ class OfficeAPI {
 		this.sender = this.messageRead.sender;
 		this.toRecipients = this.messageRead.to;
 		this.ccRecipients = this.messageRead.cc;
-		this.attachments = this.messageRead.attachments;
-	}
+        this.attachments = this.messageRead.attachments;
+
+        this.config = new Config({});        
+        this.authService = new AdalAuthenticationService();
+    }
+
+    private authenticateAdal() {
+        this.config.adalConfig.displayCall = (hash) => {
+             
+        }
+    }
 
 	getBodyContent(): Q.Promise<string> {
 		var deferred = Q.defer<string>();
@@ -102,33 +114,12 @@ class OfficeAPI {
 			});
 		});
 		return deferred.promise;
-	}
-
-	//getAttachmentDetails(attachment: Office.AttachmentDetails): Q.Promise<any> {
-	//	var deferred = Q.defer<any>();
-	//	var mailBox = Office.context.mailbox;
-	//	this.setServiceToken().then(token => {
-	//		var request = {
-	//			token: token,
-	//			ewsUrl: mailBox.ewsUrl,
-	//			attachment: this.getAttachemntObject(attachment),
-	//			documentServiceUrl: "",
-	//			documentServiceToken: ""
-	//		};
-	//		http.post(appConfig.absoluteUrl + "OfficeApi/ProcessMailAttachment", request)
-	//			.then((response) => {
-	//				deferred.resolve(response);
-	//			}).fail((jqXHR, textStatus, errorThrown) => {
-	//				deferred.reject(errorThrown);
-	//			});
-	//	});
-	//	return deferred.promise;
-	//}
+	}	
 
 	getAttachmentDetails(attachment: Office.AttachmentDetails): Q.Promise<any> {
-		adalAuthenticationService.AuthContect.adal.acquireToken("https://outlook.office.com", (error, token) => {
+		//adalAuthenticationService.AuthContect.adal.acquireToken("https://outlook.office.com", (error, token) => {
 
-		});
+		//});
 		var deferred = Q.defer<any>();
 		var mailBox = Office.context.mailbox;
 		var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1uQ19WWmNBVGZNNXBPWWlKSE1iYTlnb0VLWSIsImtpZCI6Ik1uQ19WWmNBVGZNNXBPWWlKSE1iYTlnb0VLWSJ9.eyJhdWQiOiJodHRwczovL291dGxvb2sub2ZmaWNlLmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzhlOGU3YmYwLWUxOTgtNDFhNi04OTc2LTJiZDNhOWNhMGJhZi8iLCJpYXQiOjE0NDE3MTkwNTQsIm5iZiI6MTQ0MTcxOTA1NCwiZXhwIjoxNDQxNzIyOTU0LCJ2ZXIiOiIxLjAiLCJ0aWQiOiI4ZThlN2JmMC1lMTk4LTQxYTYtODk3Ni0yYmQzYTljYTBiYWYiLCJvaWQiOiI1MWYyYzA4NC03N2QyLTRhY2YtYWVlNS0xZjM1MzY2MGI3MmUiLCJ1cG4iOiJoa21AZ2Vja28ubm8iLCJwdWlkIjoiMTAwMzAwMDA4QjA3NjQ1MyIsInN1YiI6IldJU0tKZ3VsN2wyMHluUGQ2UUhUa3FFbDc0THdma3dtcHRjUV96eVc3M3MiLCJnaXZlbl9uYW1lIjoiSGl0ZW5kcmEgS3VtYXIiLCJmYW1pbHlfbmFtZSI6Ik1hbHZpeWEiLCJuYW1lIjoiSGl0ZW5kcmEgS3VtYXIgTWFsdml5YSIsImFtciI6WyJwd2QiXSwidW5pcXVlX25hbWUiOiJoa21AZ2Vja28ubm8iLCJvbnByZW1fc2lkIjoiUy0xLTUtMjEtMTk5Mzk2Mjc2My04NTQyNDUzOTgtMTcwODUzNzc2OC04MjM2IiwiYXBwaWQiOiIzNzkxYzg5Yi00YzE2LTRjMTgtYjk5Ni0yZmRiNzU4ODQ1MWQiLCJhcHBpZGFjciI6IjAiLCJzY3AiOiJDYWxlbmRhcnMuUmVhZFdyaXRlIENvbnRhY3RzLlJlYWRXcml0ZSBNYWlsLlJlYWRXcml0ZSIsImFjciI6IjEiLCJpcGFkZHIiOiIxMTEuOTMuMTI4LjI2In0.Kkyu5FjyCNNSkxLVQMEf1FrUz5dSP06ggoUJh-6hsXBzXgy3DRisYI3VH3LjqWISmqbdkVjVwpvOZlDFTYofAhAaDmO_FUCuFV6h29msGsbHws69Pr7R8F7nKuOGoXH-IjJmARGJ177RYvKIS8SeHgkGUrypEB6zzYVOjTHVVvz-k5Qvv3pdEdy53tFX1qKbLTqVUjj8qA0TcrYWR1htEcVKqZH3kYfxUcDe1ORm8TlReFfEhlX2IHygE0x5P6DgrexumOzSD5R_QTbMpCoqixBiuzGaTOl6_Im4VVl_nrwEeWirM-pxlvVTDN_V21g3jVEIIlMi9NvEciAI-SOBJg";

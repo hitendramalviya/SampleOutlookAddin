@@ -1,18 +1,16 @@
-﻿
-class adalAuthenticationService {
-	static AuthConfig: any;
-	static AuthContect: adalAuthenticationService;
+﻿class AdalAuthenticationService {
+	static AuthConfig: any;	
 	adal: any = null;
-	private oauthData = { isAuthenticated: false, userName: '', loginError: '', profile: '' };
+	private oAuthData = { isAuthenticated: false, userName: '', loginError: '', profile: '' };
 
 	private updateDataFromCache(resource) {
 		// only cache lookup here to not interrupt with events
 		var token = this.adal.getCachedToken(resource);
-		this.oauthData.isAuthenticated = token !== null && token.length > 0;
+		this.oAuthData.isAuthenticated = token !== null && token.length > 0;
 		var user = this.adal.getCachedUser() || { userName: '' };
-		this.oauthData.userName = user.userName;
-		this.oauthData.profile = user.profile;
-		this.oauthData.loginError = this.adal.getLoginError();
+		this.oAuthData.userName = user.userName;
+		this.oAuthData.profile = user.profile;
+		this.oAuthData.loginError = this.adal.getLoginError();
 	}
 
 	init(configOptions) {
@@ -31,7 +29,7 @@ class adalAuthenticationService {
 			//}
 
 			// create instance with given config
-			this.adal = new AuthenticationContext(configOptions);
+            var adal = new AuthenticationContext(configOptions);            
 		} else {
 			throw new Error('You must set configOptions, when calling init');
 		}
@@ -46,15 +44,12 @@ class adalAuthenticationService {
 
 		// loginresource is used to set authenticated status
 		this.updateDataFromCache(this.adal.config.loginResource);
-
-		adalAuthenticationService.AuthContect = this;
-		adalAuthenticationService.AuthConfig = configOptions;
 	}
 
 	login() {
-		if (!this.oauthData.isAuthenticated && !this.adal.isCallback(window.location.hash)) {
+		if (!this.oAuthData.isAuthenticated && !this.adal.isCallback(window.location.hash)) {
 			this.adal.login();
 		}
 	}
 }
-export = adalAuthenticationService;
+export = AdalAuthenticationService;
