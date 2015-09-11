@@ -1,0 +1,1 @@
+http://blog.mastykarz.nl/building-office-365-single-page-applications-any-platform/

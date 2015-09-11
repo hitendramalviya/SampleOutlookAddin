@@ -1,0 +1,22 @@
+﻿@using System.Web.Optimization
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>O365 Authentication callback</title>
+</head>
+<body>
+<script type="text/javascript">
+	if (window.opener && typeof window.opener["oAuthCallback"] === "function") {//either it is in popup (login request)
+		var loginCallback = window.opener["oAuthCallback"];
+		loginCallback(location.hash, window);
+		window.close();
+	}
+	else {//or in iframe (refresh token request)
+		var loginCallback = window.parent["oAuthCallback"];
+		loginCallback(location.hash, window);
+	}
+	
+</script>
+</body>
+</html>
